@@ -1,6 +1,5 @@
 import {userService} from './user.service.js'
 import {logger} from '../../services/logger.service.js'
-// import {socketService} from '../../services/socket.service.js'
 
 export async function getUser(req, res) {
     try {
@@ -40,5 +39,19 @@ export async function updateUser(req, res) {
     } catch (err) {
         logger.error('Failed to update user', err)
         res.status(400).send({ err: 'Failed to update user' })
+    }
+}
+
+
+export async function updateUsers(req,res){
+
+    try {
+        const users = req.body 
+        console.log('users:', users)
+        const savedUsers = await userService.updateUsers(users)
+        res.send(savedUsers)
+    } catch (err) {
+        logger.error('Failed to update users', err)
+        res.status(400).send({ err: 'Failed to update users' })
     }
 }

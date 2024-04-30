@@ -7,6 +7,7 @@ export const userService = {
     add,            // Create (Signup)
     getById,        // Read (Profile page)
     update,         // Update (Edit profile)
+    updateUsers,    // Update all users
     remove,         // Delete (remove user)
     query,          // List (of users)
     getByUsername   // Used for Login
@@ -86,6 +87,30 @@ async function update(user) {
         throw err
     }
 }
+
+
+async function updateUsers(users) {
+    try {
+        const collection = await dbService.getCollection('user')
+        const updatePromises = users.map(async user => {
+            const userToSave = {
+                _id: ObjectId(user._id), // Ensure the ID is in the correct format for MongoDB
+                shifts: user.shifts,
+            };
+            await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
+            return userToSave
+        });
+
+        // Wait for all updates to complete
+        const updatedUsers = await Promise.all(updatePromises)
+        console.log('updatedUsers:', updatedUsers)
+        return updatedUsers
+    } catch (err) {
+        logger.error(`cannot update users`, err)
+        throw err
+    }
+}
+
 
 async function add(user) {
     try {
